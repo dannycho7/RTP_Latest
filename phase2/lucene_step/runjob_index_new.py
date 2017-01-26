@@ -13,8 +13,8 @@ def run_command_n(com):
     newc = com + ' >> log.out 2>&1'
     os.popen(newc)
 
-fin = open('../convert_table.txt','r')
-os.chdir('../cluster/')
+fin = open('../create_clusters/convert_table.txt','r')
+os.chdir('../create_clusters/cluster/')
 
 for line in fin.readlines():
     line_list = line.split(' ')
