@@ -13,7 +13,6 @@
 
 using namespace std;
 
-
 // vid occurence
 class Occurence
 {

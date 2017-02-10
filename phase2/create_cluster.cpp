@@ -1,40 +1,60 @@
-#include "CreateCluster.h"
-
+/** This project is used to generate clusters
+ *  Author: Jiyu
+ **/
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <unordered_map>
+#include <stdlib.h>
+#include "neverlost_util.h"
 using namespace std;
 
-CreateCluster::CreateCluster(){
-	init();
-}
+unordered_map<string,int> title_to_did;
+unordered_map<int,vector<int>> did_to_vids;
+int doc_num;
 
-//initialisation for all clusters
-void CreateCluster::init()
+int total_found_fragment;
+int did, next_did; // document id
+int vid, next_vid; // version id
+int fid, next_fid; // fragment id
+unordered_map<string, int> title_did_hash; // hash from title to document id
+unordered_map<int, int> vid_did_hash; // hash from vid to did
+unordered_map<int, vector<int>> did_vid_hash; // hash from did to vid; each document will have a vector of vid
+unordered_map<int, int> fid_size_hash; // hash from fid to its size
+unordered_map<int, string> fid_content_hash; // hash from fid to its content
+unordered_map<string, int> content_fid_hash; // hash from a fragment's content to its id
+unordered_map<int, vector<int>> vid_fid_hash; // hash from vid to fid; each page will have a vector of fragment
+unordered_map<int ,string> did_title_hash; // hash from did to title 
+ofstream latest_version;
+
+class ReuseTableInfo
+{
+public:
+    int vid;
+    int offset;
+};
+
+
+unordered_map<int, vector<ReuseTableInfo>> frag_reuse_table;
+
+
+void init()
 {
     doc_num=0;
-    vid=0;
     title_to_did.clear();
     did_to_vids.clear();
-    system("rm -rf cluster");
+    system("rm -r cluster");
     system("mkdir cluster");
 }
 
-void CreateCluster::cluster_init()
+void deal_with_ver(string& content, int vid)
 {
-    //total_found_fragment=0;
-    next_did = next_vid = next_fid = 0;
-    title_did_hash.clear();
-    vid_did_hash.clear();
-    did_vid_hash.clear();
-    fid_size_hash.clear();
-    fid_content_hash.clear();
-    content_fid_hash.clear();
-    vid_fid_hash.clear();
-    frag_reuse_table.clear();
-    did_title_hash.clear();
-}
-
-void CreateCluster::deal_with_ver(Page* page)
-{
-    string title = page->getTitle();
+    size_t found = content.find_first_of("\t");
+    size_t len = found + 1;
+    string title;
+    title = content.substr(0, len);
     int current_doc;
     auto iter = title_to_did.find(title);
     if (iter == title_to_did.end()){
@@ -55,7 +75,7 @@ void CreateCluster::deal_with_ver(Page* page)
     }
 
     did_to_vids[current_doc].push_back(vid);
-    vid++;
+
 
     ostringstream outputfile;
     outputfile << "./cluster/" << current_doc << "/all_ver.txt";
@@ -63,15 +83,30 @@ void CreateCluster::deal_with_ver(Page* page)
     ofstream fout;
 
     fout.open(filename.c_str(), ofstream::app);
-    fout << page->getTitle() + "\t" + page->getContent() << endl;
+    fout << content << endl;
     fout.close();
+}
+
+void cluster_init()
+{
+    //total_found_fragment=0;
+    next_did = next_vid = next_fid = 0;
+    title_did_hash.clear();
+    vid_did_hash.clear();
+    did_vid_hash.clear();
+    fid_size_hash.clear();
+    fid_content_hash.clear();
+    content_fid_hash.clear();
+    vid_fid_hash.clear();
+    frag_reuse_table.clear();
+    did_title_hash.clear();
 }
 
 /** location of the docs in version $i: ../fragment/result$(i+1)/XX.txt
  **/
 
 // find the document id of a page given its title
-int CreateCluster::get_did_from_title(string &title)
+int get_did_from_title(string &title)
 {
     int id;
     unordered_map<string, int>::const_iterator iter = title_did_hash.find(title); 
@@ -87,7 +122,7 @@ int CreateCluster::get_did_from_title(string &title)
 }
 
 // maintain did_vid_hash
-void CreateCluster::maintain_did_vid_hash()
+void maintain_did_vid_hash()
 {
     unordered_map<int, vector<int>>::iterator iter = did_vid_hash.find(did);
     if (iter != did_vid_hash.end()) // found
@@ -106,7 +141,7 @@ void CreateCluster::maintain_did_vid_hash()
 }
 
 // calculate the number of words in a string
-int CreateCluster::get_words_number(string &line)
+int get_words_number(string &line)
 {
     int number=1;
     for (int i=0; i<line.length(); i++)
@@ -117,7 +152,7 @@ int CreateCluster::get_words_number(string &line)
     return number;
 }
 
-void CreateCluster::output_fragment(int fid, string &line, string& folder_base)
+void output_fragment(int fid, string &line, string& folder_base)
 {
     ofstream fout;
     string file_name = folder_base+"all_fragments.txt";
@@ -126,7 +161,7 @@ void CreateCluster::output_fragment(int fid, string &line, string& folder_base)
     fout.close();
 }
 
-void CreateCluster::deal_with_title(string title, int pageno)
+void deal_with_title(string title, int pageno)
 {
     // If the title is empty, we don't deal with this page. Regard it as an error one.    
     if (title.length() < 2)
@@ -145,7 +180,7 @@ void CreateCluster::deal_with_title(string title, int pageno)
 }
 
 // do the work for all the fragments
-void CreateCluster::do_fragments(vector<string>& frag, int pageno, string& folder_base)
+void do_fragments(vector<string>& frag, int pageno, string& folder_base)
 {
     string line;
     if (frag.size()==0)
@@ -220,7 +255,7 @@ void CreateCluster::do_fragments(vector<string>& frag, int pageno, string& folde
 }
 
 // do the work for a page which can be acquired using the input file stream "fin"
-void CreateCluster::do_page(vector<string>& frag, int pageno, string& folder_base)
+void do_page(vector<string>& frag, int pageno, string& folder_base)
 {
     vid = next_vid++;
     
@@ -228,7 +263,8 @@ void CreateCluster::do_page(vector<string>& frag, int pageno, string& folder_bas
     do_fragments(frag, pageno, folder_base);
 }
 
-char CreateCluster::hash_string(string s)
+
+char hash_string(string s)
 {
     int result=0;
     for (int i=0; i<s.size(); i++)
@@ -239,7 +275,7 @@ char CreateCluster::hash_string(string s)
     return (char)(result+1);
 }
 
-void CreateCluster::hash_content(char *result_hash, vector<string>& v)
+void hash_content(char *result_hash, vector<string>& v)
 {
     int i;
     for (i=0; i<v.size(); i++)
@@ -247,7 +283,9 @@ void CreateCluster::hash_content(char *result_hash, vector<string>& v)
     result_hash[i] = '\0';
 }
 
-void CreateCluster::deal_with_doc(string& content, int doc_id, string& folder_base)
+
+
+void deal_with_doc(string& content, int doc_id, string& folder_base)
 {
     /* Deal with each document:
      * (1) Firstly we need to hash each string to a char.
@@ -256,9 +294,13 @@ void CreateCluster::deal_with_doc(string& content, int doc_id, string& folder_ba
      */ 
     // Step(1):
     // find title
-    Page* page = Page::getPageFromLine(content);
+    size_t found = content.find_first_of("\t");
+    size_t len = found + 1;
+    string title;
+    title = content.substr(0, len);
+    content = content.substr(len); // don't print title again in the second line
     // read strings of a doc
-    istringstream iss(page->getContent());
+    istringstream iss(content);
     vector<string> v;
     v.clear();
     string word;
@@ -275,14 +317,14 @@ void CreateCluster::deal_with_doc(string& content, int doc_id, string& folder_ba
     vector<string> chunks;
     NeverLostUtil::chunkContent(char_doc, true, 30, chunks); 
     
-    // Step(3)
+    // Step(3):
     ofstream fout;
     int cur_start=0;
     
     // form result
     vector<string> doc_result(0);
     // print title as the first line
-    doc_result.push_back(page->getTitle());
+    doc_result.push_back(title);
     for (int i=0; i<chunks.size(); i++) 
     {
         string fragment="";
@@ -297,7 +339,8 @@ void CreateCluster::deal_with_doc(string& content, int doc_id, string& folder_ba
     delete []result_hash;
 }
 
-void CreateCluster::output_index(string& folder_base)
+
+void output_index(string& folder_base)
 {
     ofstream findex;
     string file_name = folder_base+"index.txt";
@@ -334,7 +377,7 @@ void CreateCluster::output_index(string& folder_base)
 }
 
 // output the relationship between version and document
-void CreateCluster::output_dvrelation(string& folder_base)
+void output_dvrelation(string& folder_base)
 {
     ofstream freldv, frelvd;
     string freldv_file = folder_base+"dvrelation.txt";
@@ -363,7 +406,7 @@ void CreateCluster::output_dvrelation(string& folder_base)
 }
 
 
-void CreateCluster::gen_index_for_cluster(string& folder_base){
+void gen_index_for_cluster(string& folder_base){
 
     string filename = folder_base + "all_ver.txt";
     ifstream fin;
@@ -371,37 +414,21 @@ void CreateCluster::gen_index_for_cluster(string& folder_base){
     string line; // each line of the input file is a document
     int doc_num=0;
     cluster_init();
-    if(choice == RepresentativeChoice::Latest){
-        string latest_line;
-        while(getline(fin, line))
-        {
-            // deal with each document
-            deal_with_doc(line, doc_num, folder_base);
-            doc_num++;
-            latest_line = line;
-        }
-        representative_version << latest_line << endl;
+    string latest_line;
+    while(getline(fin, line))
+    {
+        // deal with each document
+        deal_with_doc(line, doc_num, folder_base);
+        doc_num++;
+        latest_line = line;
     }
-    else if(choice == RepresentativeChoice::Longest){
-        string longest_line="";
-        int longest_length=0;
-        while(getline(fin, line)){
-            // deal with each document
-            deal_with_doc(line, doc_num, folder_base);
-            doc_num++;
-            if(line.length() >= longest_length){    //take latest longest version
-                longest_length = line.length();
-                longest_line = line;
-            }
-        }
-        representative_version << longest_line << endl;
-    }
+    latest_version << latest_line << endl;
     fin.close();
     output_index(folder_base);
     output_dvrelation(folder_base);
 }
 
-int CreateCluster::output_convert_table(){
+int output_convert_table(){
     ofstream convert_table;
     string convert_path = "./convert_table.txt";
     convert_table.open(convert_path.c_str(), ios::ate);
@@ -416,16 +443,31 @@ int CreateCluster::output_convert_table(){
     return 0;
 }
 
-void CreateCluster::gen_index_for_all_cluster(){
-    string representative_name;
-    if(choice == RepresentativeChoice::Latest){
-        representative_name = "../../phase1/latest.txt";
+int main(int argc, char** argv) {
+    if (argc != 2)
+    {
+        cout << "need filename" << endl;
+        exit(1);
     }
-    else if(choice == RepresentativeChoice::Longest){
-        representative_name = "../../phase1/longest.txt";
+    string filename = string(argv[1]);
+    ifstream fin;
+    fin.open(filename.c_str());
+    string latest_name = "../phase1_latest/latest.txt";
+    latest_version.open(latest_name.c_str(), ios::ate);
+    string line; // each line of the input file is a document
+    int vid=0;
+    init();
+    while(getline(fin, line))
+    {
+        // deal with each document
+        deal_with_ver(line, vid);
+        vid++;
+        if (vid%10000==0)
+            printf("done vid = %d\n",vid);
     }
-    representative_version.open(representative_name.c_str(), ios::ate);
-	for (int i=0;i<doc_num;i++){
+    fin.close();
+
+    for (int i=0;i<doc_num;i++){
         cluster_init();
         ostringstream folder_base;
         folder_base << "./cluster/" << i << "/";
@@ -434,10 +476,9 @@ void CreateCluster::gen_index_for_all_cluster(){
         if (i%1000==0)
             printf("done doc = %d\n",i);
     }
-    representative_version.close();
+    latest_version.close();
+    output_convert_table();
+    return 0;
 }
-
-
-
 
 

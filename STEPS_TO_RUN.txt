@@ -1,13 +1,6 @@
 In RTP
-1) ./make_all.sh to compile all needed source file
+First ./make_all.sh to compile all needed source file;
+Second ./initial.sh path_to_raw_data, to index, e.g. ./initial.sh ./data/all13v.txt;
+Then put your queries in queries_all.txt & python batch_optionTestCluster_vector_new.py to query. 
 
-2) ./initial.sh <path_to_xml_data> <choice_of_representative>, to index the data, 
-Possible choices for for <choice_of_representative>:
-1 : for latest representative
-2: for longest representative
-
-e.g. ./initial.sh ./data/all13v.xml 1;
-
-
-3)put your queries in queries_all.txt & python batch_optionTestCluster_vector_new.py to query. 
-****** Note:Remember to change the top_k in run_optionTestCluster_vector_new.sh. ******
+Remember to change the top_k in run_optionTestCluster_vector_new.sh.

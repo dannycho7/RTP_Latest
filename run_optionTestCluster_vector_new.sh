@@ -2,7 +2,7 @@
 
 # $1 -> query, $2 -> query length
 
-top_k=2
+top_k=10
 
 if [ -z "$1" ]; then
     echo "The query cannot be empty."
@@ -11,7 +11,7 @@ else
 #echo "************************************************"
 #echo "Run query: $1"
     # Step 1: In phase1_rep: run lucene package to generate "search_frag.txt"
-    cd phase1/lucene_step
+    cd phase1_latest/lucene_step
     #edit query
     rm -rf search_frag.txt
     java -jar archive_lucene_search.jar $1 &> /dev/null

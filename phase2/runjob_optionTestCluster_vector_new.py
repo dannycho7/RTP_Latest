@@ -31,7 +31,7 @@ vd_list = line.rstrip('\n').split(' ')
 vd_list.remove('') # vd_list contains the vid from phase1_rep
             
 # create dictionary 'dic_dv' for the relation from did to number of vid in its cluster
-fin_dv = open('./create_clusters/convert_table.txt', 'r')
+fin_dv = open('convert_table.txt', 'r')
 lines_dv = fin_dv.readlines()
 fin_dv.close()
 dic_dv = {}
