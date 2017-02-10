@@ -37,21 +37,22 @@ fin_dv.close()
 dic_dv = {}
 for i in range(len(lines_dv)):
     line_dv_list = lines_dv[i].rstrip('\n').split(' ')
-    key_dv = line_dv_list[0]
-    value_dv = int(line_dv_list[1]);
-    dic_dv[int(key_dv)] = value_dv
+    key_dv = int(line_dv_list[0])
+    value_dv = []
+    for j in range(int(line_dv_list[1])):
+        value_dv.append(int(line_dv_list[2+j]))
+    dic_dv[key_dv] = value_dv
     
 # choose p vids which occupy k vids to compare with optionTest
-count=0
-final_vid_list=[]
-fout = open('vidlistC.txt', 'w')
-for p in range(len(vd_list)):
-    final_vid_list.append(vd_list[p]) # add one more vid into the list
+final_result = []
+if k > len(vd_list):
+    print "not enough results from phase 1, change top k!"
+    exit()
+
+for p in range(k):
     did = int(vd_list[p])
-    count = count + dic_dv[did]
     # work on cluster did
     print 'work on cluster', did, ':'
-    fout.write(str(did)+'\n')
     
     os.chdir('cluster/'+str(did))
     print '**********enter cluster '+str(did)+'**********'
@@ -64,17 +65,22 @@ for p in range(len(vd_list)):
     com = '../../search_doc/search_doc '+ str(query_len)
     print 'run search_doc:'
     run_command(com)
-    # run option C using "search_frag.txt", "vidlist.txt" and "forward.txt"
-    com = '../../search_doc/optionTestCluster_vector '+ str(query_len)
-    print 'run optionTestCluster:'
-    run_command(com)
+    fr = open('result.txt', 'r')
+    lines_r = fr.readlines()
+    fr.close()
+    for i in range(len(lines_r)):
+        lines_r_list = lines_r[i].rstrip('\n').split(' ')
+        rid = int(lines_r_list[0])
+        rscore = float(lines_r_list[1])
+        rvid = dic_dv[did][rid]
+        final_result.append((rvid, rscore))
     # finally, quit this cluster
     os.chdir('../..')
-    
-    if count > k:
-        print 'p=', p
-        break
-if count < k :
-    print 'vidlist.txt does not contain enough pages to calculate top ', k
-    print count, p+1
+
+final_result.sort(cmp=mycmp)
+fout=open('final_result.txt', 'w')
+for item in final_result:
+    fout.write(str(item[0])+' '+str(item[1])+'\n')
 fout.close()
+
+

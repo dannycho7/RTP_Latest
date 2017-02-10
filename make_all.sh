@@ -1,6 +1,8 @@
 #!/bin/bash
 
-cd ./phase2
+cd ./pre_process
+make
+cd ../phase2
 make
 cd lucene_step
 make

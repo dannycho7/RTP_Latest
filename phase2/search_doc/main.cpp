@@ -675,10 +675,10 @@ int main(int argc, char** argv)
     init();
     read_index();
     read_search_frag();
-    //intersection();
-    intersection1();
-    print_vid();
-    //scoring();
+    intersection();
+    //intersection1();
+    //print_vid();
+    scoring();
     return 0;
 }
 

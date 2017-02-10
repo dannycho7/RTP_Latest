@@ -2,7 +2,7 @@
 
 # $1 -> query, $2 -> query length
 
-top_k=10
+top_k=3
 
 if [ -z "$1" ]; then
     echo "The query cannot be empty."
@@ -30,8 +30,7 @@ else
 #echo
 #echo ">>>> Start Searching using OptionTestCluster <<<<"
 #echo
-    python runjob_optionTestCluster_vector_new.py "$1" $2 $top_k &> outputTestCluster
+    python runjob_optionTestCluster_vector_new.py "$1" $2 $top_k &> /dev/null
 #echo ">>>> Finish Searching using OptionTestCluster <<<<"
-    python calculateTestCluster.py $2 $top_k
 
 fi
