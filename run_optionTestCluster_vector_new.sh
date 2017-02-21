@@ -11,13 +11,13 @@ else
 #echo "************************************************"
 #echo "Run query: $1"
     # Step 1: In phase1_rep: run lucene package to generate "search_frag.txt"
-    cd phase1_latest/lucene_step
+    cd phase1_super/lucene_step
     #edit query
     rm -rf search_frag.txt
     java -jar archive_lucene_search.jar $1 &> /dev/null
     # Step 2: In phase1_rep: run search_doc to generate "vidlist.txt"
     cd ../search_doc
-    ./search_doc $2 &> /dev/null
+    ./search_doc $2 $1 &> /dev/null
     # Step 3: In phase2: run "runjob_optionC.py" for optionC and "runjob_optionA.py" for optionA
     cd ../../phase2
     # edit query

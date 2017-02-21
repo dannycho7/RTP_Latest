@@ -418,9 +418,9 @@ void gen_index_for_cluster(string& folder_base){
     while(getline(fin, line))
     {
         // deal with each document
+        latest_line = line;
         deal_with_doc(line, doc_num, folder_base);
         doc_num++;
-        latest_line = line;
     }
     latest_version << latest_line << endl;
     fin.close();
@@ -452,7 +452,7 @@ int main(int argc, char** argv) {
     string filename = string(argv[1]);
     ifstream fin;
     fin.open(filename.c_str());
-    string latest_name = "../phase1_latest/latest.txt";
+    string latest_name = "../phase1_super/latest.txt";
     latest_version.open(latest_name.c_str(), ios::ate);
     string line; // each line of the input file is a document
     int vid=0;

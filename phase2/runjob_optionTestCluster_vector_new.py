@@ -22,14 +22,14 @@ if len(sys.argv) != 4:
 
 query = sys.argv[1]
 query_len = int(sys.argv[2])
-fin = open('../phase1_latest/search_doc/vidlist.txt', 'r')# !!!USER!!!use phase 1's result, need to modify     input file path
+fin = open('../phase1_super/search_doc/result.txt', 'r')# !!!USER!!!use phase 1's result, need to modify     input file path
 k=int(sys.argv[3])
-
-line = fin.readline()
+lines = fin.readlines()
 fin.close()
-vd_list = line.rstrip('\n').split(' ')
-vd_list.remove('') # vd_list contains the vid from phase1_rep
-            
+if (k>len(lines)):
+    print 'not enough lines, k<result length, set k to be ',len(lines)
+    k = len(lines)
+
 # create dictionary 'dic_dv' for the relation from did to number of vid in its cluster
 fin_dv = open('convert_table.txt', 'r')
 lines_dv = fin_dv.readlines()
@@ -45,12 +45,10 @@ for i in range(len(lines_dv)):
     
 # choose p vids which occupy k vids to compare with optionTest
 final_result = []
-if k > len(vd_list):
-    print "not enough results from phase 1, change top k!"
-    exit()
 
 for p in range(k):
-    did = int(vd_list[p])
+    line_list = lines[p].rstrip('\n').split(' ')
+    did = int(line_list[0])
     # work on cluster did
     print 'work on cluster', did, ':'
     
