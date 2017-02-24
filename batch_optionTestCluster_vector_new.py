@@ -5,7 +5,7 @@ import subprocess
 
 list = []
 
-with open('queries_all.txt', 'r') as f:
+with open(sys.argv[1], 'r') as f:
     for line in f:
         q = line.strip()
         length = len(q.split(' '))
