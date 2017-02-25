@@ -1,6 +1,6 @@
 In RTP
-First ./make_all.sh to compile all needed source file;
-Second ./initial.sh path_to_raw_data, to index, e.g. ./initial.sh ./data/all13v.txt;
-Then put your queries in queries_all.txt & ./run_batch.sh queries_all.txt to query. 
+First run make to compile all needed source file;
+Second ./index.sh path_to_xml_data, to index, e.g. ./index.sh ./data/data.xml;
+Then put your queries in query/queries_all.txt & ./run_batch.sh queries_all.txt to query. 
 
-Remember to change the top_k in run_optionTestCluster_vector_new.sh.
+Remember to change the top_k in src/search_scripts/run_optionTestCluster_vector_new.sh.
