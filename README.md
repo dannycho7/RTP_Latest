@@ -5,7 +5,7 @@ Release note: [March, 2017]
 
 Project overview:
 -----------------
-A Representative guided Two-Phase as Described in [1]. The package takes an input in the XML format. The framework uses C++ and lucene to index and search the dataset.
+A Representative guided Two-Phase Search as Described in [1]. The package takes an input in the XML format. The framework uses C++ and lucene to index and search the dataset.
 
 Package overview:
 -----------------
@@ -27,11 +27,13 @@ Quick start:
 
 4) Make sure that the OpenSSL in installed on your machine.
 
-5) To compile:
+5) Install Java (needed for the Lucene jars)
+
+6) To compile:
 
 `make`
 
-6) To index the data
+7) To index the data:
 
 `./index.sh <data_file_path> <choice_of_representative>`
 
@@ -41,7 +43,7 @@ Possible choices for &lt;choice_of_representative&gt; are:
 
 	2: for longest representative
 
-7) To run queries: Enter all the queries (1 per line) in a .txt file and run the following command:
+8) To run queries: Enter all the queries (1 per line) in a .txt file and run the following command:
 
 `./run_batch.sh <query_file>`
 
