@@ -22,13 +22,12 @@ if len(sys.argv) != 4:
     print "needed query, query length and top k!"
     exit()
 
-print(os.getcwd())
-
 query = sys.argv[1]
 query_len = int(sys.argv[2])
 fin = open(path_to_target_dir + 'result.txt', 'r')# !!!USER!!!use phase 1's result, need to modify     input file path
 k=int(sys.argv[3])
 lines = fin.readlines()
+
 fin.close()
 if (k>len(lines)):
     print 'not enough lines, k<result length, set k to be ',len(lines)
@@ -68,7 +67,7 @@ for p in range(k):
     com = curr_path_to_target_dir + 'phase2_search_doc '+ str(query_len)
     print 'run search_doc:'
     run_command(com)
-    fr = open(curr_path_to_target_dir + 'result.txt', 'r')
+    fr = open('result.txt', 'r')
     lines_r = fr.readlines()
     fr.close()
     for i in range(len(lines_r)):

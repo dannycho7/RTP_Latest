@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # $1 -> query, $2 -> query length
-pwd
 top_k=1
 
 if [ -z "$1" ]; then
