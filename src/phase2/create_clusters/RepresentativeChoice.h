@@ -1,4 +1,0 @@
-enum RepresentativeChoice{
-	Latest,
-	Longest
-};

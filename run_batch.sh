@@ -2,7 +2,11 @@
 
 # $1 -> all queries
 
-./src/pre_process_query/pre_process.sh $1
-FILE_PATH='query.stem.clean'
-
-python ./src/search_scripts/batch_optionTestCluster_vector_new.py $FILE_PATH
+if [ "$#" -eq 1 ]; then
+	./src/pre_process_query/pre_process.sh $1
+	FILE_PATH='query.stem.clean'
+ 	
+ 	python ./src/search_scripts/search_batch_job.py $FILE_PATH
+else
+	echo "Illegal number of arguments. Should be of format: ./run_batch.sh <queries_file>"
+fi

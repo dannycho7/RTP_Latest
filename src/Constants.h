@@ -11,6 +11,7 @@ namespace RTP{
 	constexpr char TITLE_LEN_FILE_NAME[] = "title_length.txt";
 	constexpr char SUPER_INDEX_FILE_NAME[] = "super_index";
 	constexpr char TITLE_LENGTH_FILE_NAME[] = "title_length.txt";
+	constexpr char BITMAP_FILE_NAME[] = "bitmap.txt";
 
 	//file names created for each clsuter
 	constexpr char ALL_FRAGS_FILE_NAME[] = "all_fragments.txt";
@@ -19,5 +20,6 @@ namespace RTP{
 	constexpr char DV_FILE_NAME[] = "dvrelation.txt";
 	constexpr char VD_FILE_NAME[] = "vdrelation.txt";
 	constexpr char FORWARD_FILE_NAME[] = "forward.txt";
+	constexpr char POSTING_FILE_NAME[] = "posting.txt";
 
 }
