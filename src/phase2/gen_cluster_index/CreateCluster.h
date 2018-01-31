@@ -58,6 +58,7 @@ private:
 	void deal_with_doc(string& content, int doc_id, string& folder_base);
 	void output_index(string& folder_base);
 	void output_dvrelation(string& folder_base);	// output the relationship between version and document
-	void gen_index_for_cluster_latest(string& folder_base);
-	void gen_index_for_cluster_longest(string& folder_base);
+	void gen_index_for_cluster(string& folder_base, RepresentativeChoice choice);
+	string get_representative_for_latest(ifstream& fin, string& line, int& doc_num, string& folder_base);
+	string get_representative_for_longest(ifstream& fin, string& line, int& doc_num, string& folder_base);
 };

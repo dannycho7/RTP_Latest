@@ -135,83 +135,73 @@ void CreateCluster::deal_with_doc(string& content, int doc_id, string& folder_ba
 }
 
 void CreateCluster::gen_index_for_all_cluster(){
-    string representative_name;
-    if(choice == RepresentativeChoice::Super_Latest){
-        representative_name = rel_path_to_target + RTP::LATEST_FILE_NAME;
-        representative_version.open(representative_name.c_str(), ios::ate);
-        for (int i=0; i < doc_num; i++){
-            cluster_init();
-            ostringstream folder_base;
-            folder_base << rel_path_to_target + "cluster/" << i << "/";
-            string base = folder_base.str();
-            gen_index_for_cluster_latest(base);
-            if (i%1000==0)
-                printf("done doc = %d\n",i);
-        }
+    string representative_name = rel_path_to_target;
+    if(choice == RepresentativeChoice::Super_Latest) {
+        representative_name += RTP::LATEST_FILE_NAME;
+    } else if(choice == RepresentativeChoice::Super_Longest) {
+        representative_name += RTP::LONGEST_FILE_NAME;
     }
-    else if(choice == RepresentativeChoice::Super_Longest){
-        representative_name = rel_path_to_target + RTP::LONGEST_FILE_NAME;
-        representative_version.open(representative_name.c_str(), ios::ate);
-        for (int i=0; i < doc_num; i++){
-            cluster_init();
-            ostringstream folder_base;
-            folder_base << rel_path_to_target + "cluster/" << i << "/";
-            string base = folder_base.str();
-            gen_index_for_cluster_longest(base);
-            if (i%1000==0)
-                printf("done doc = %d\n",i);
-        }
+
+    representative_version.open(representative_name.c_str(), ios::ate);
+    for (int i=0; i < doc_num; i++){
+        cluster_init();
+        ostringstream folder_base;
+        folder_base << rel_path_to_target + "cluster/" << i << "/";
+        string base = folder_base.str();
+        gen_index_for_cluster(base, choice);
+        if (i%1000==0)
+            printf("done doc = %d\n",i);
     }
+
     representative_version.close();
 }
 
-void CreateCluster::gen_index_for_cluster_latest(string& folder_base){
-
-    string filename = folder_base + RTP::ALL_VERSIONS_FILE_NAME;
-    ifstream fin;
-    fin.open(filename.c_str());
-    string line; // each line of the input file is a document
-    int doc_num=0;
-    cluster_init(); 
-    string latest_line;
-    while(getline(fin, line))
-    {
-        // deal with each document
-        latest_line = line;
-        deal_with_doc(line, doc_num, folder_base);
-        doc_num++;
-    }
-    representative_version << latest_line << endl;
-    fin.close();
-    output_index(folder_base);
-    output_dvrelation(folder_base);
-}
-
-void CreateCluster::gen_index_for_cluster_longest(string& folder_base){
+void CreateCluster::gen_index_for_cluster(string& folder_base, RepresentativeChoice choice){
     string filename = folder_base + RTP::ALL_VERSIONS_FILE_NAME;
     ifstream fin;
     fin.open(filename.c_str());
     string line; // each line of the input file is a document
     int doc_num=0;
     cluster_init();
-    std::size_t found;
-    string longest_line="";
-    int longest_line_length=0;
-    while(getline(fin, line)){
-        if(line.length() >= longest_line_length){    //take latest longest version
-            longest_line_length = line.length();
-            longest_line = line;
-        }
 
-        // deal with each document
-        deal_with_doc(line, doc_num, folder_base);
-        doc_num++;
+    if(choice == RepresentativeChoice::Super_Latest) {
+        representative_version << get_representative_for_latest(fin, line, doc_num, folder_base) << endl;
+    } else if(choice == RepresentativeChoice::Super_Longest) {
+        representative_version << get_representative_for_longest(fin, line, doc_num, folder_base) << endl;
     }
-    representative_version << longest_line << endl;
-    
+
     fin.close();
     output_index(folder_base);
     output_dvrelation(folder_base);
+}
+
+string CreateCluster::get_representative_for_latest(ifstream& fin, string& line, int& doc_num, string& folder_base) {
+    string latest_line="";
+    while(getline(fin, line)){
+        // deal with each document
+        deal_with_doc(line, doc_num, folder_base);
+        doc_num++;
+        latest_line = line;
+    }
+
+    return latest_line;
+}
+
+string CreateCluster::get_representative_for_longest(ifstream& fin, string& line, int& doc_num, string& folder_base) {
+    string longest_line="";
+    int longest_line_length = 0;
+    while(getline(fin, line)){
+        // deal with each document
+        deal_with_doc(line, doc_num, folder_base);
+        doc_num++;
+        if(line.length() >= longest_line_length) {
+            //take latest longest version
+            longest_line_length = line.length();
+            longest_line = line;
+        }
+    }
+
+    return longest_line;
 }
 
 // do the work for a page which can be acquired using the input file stream "fin"
