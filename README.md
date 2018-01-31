@@ -1,11 +1,9 @@
 Representative-guided Two-Phase Search (RTP)
 =======================================
-Release note: [March, 2017]
------------------
 
 Project overview:
 -----------------
-A Representative guided Two-Phase Search as Described in [1]. The package takes an input in the XML format. The framework uses C++ and lucene to index and search the dataset.
+A Representative guided Two-Phase Search as Described in [[1]](https://www.cs.ucsb.edu/~tyang/papers/CIKM16final.pdf). The package takes an input in the XML format. The framework uses C++ and lucene to index and search the dataset.
 
 Package overview:
 -----------------
@@ -19,7 +17,7 @@ data/: contains a toy-dataset of Wikipedia in the XML format.
 Quick start:
 ------------
 
-1) Clone the repository as: git clone https://github.com/mynameisverylong/RTP.git
+1) Clone the repository as: git clone https://github.com/dannycho7/RTP_Latest.git
 
 2) Make sure GCC and G++(C++11) compilers are installed in the system.
 
@@ -111,4 +109,4 @@ vid: &lt;vidN&gt; score: &lt;scoreN&gt;
 References:
 -----------
 
-[1]  "Hybrid Indexing for Versioned Document Search with Cluster-based Retrieval". Xin Jin, Daniel Agun, Tao Yang, Qinghao Wu, Yifan Shen, Susen Zhao. ACM CIKM, October 2016.
+[[1]  "Hybrid Indexing for Versioned Document Search with Cluster-based Retrieval". Xin Jin, Daniel Agun, Tao Yang, Qinghao Wu, Yifan Shen, Susen Zhao. ACM CIKM, October 2016.](https://www.cs.ucsb.edu/~tyang/papers/CIKM16final.pdf)
