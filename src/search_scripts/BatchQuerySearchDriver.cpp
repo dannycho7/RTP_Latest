@@ -32,7 +32,7 @@ int main(int argc, char** argv){
     fin.open(rel_path_to_target_dir3 + query_file_name);
     
     while (std::getline(fin, line)){
-    	cout << "####################Processing query number: " << curr_query_num << "####################" << endl;
+    	cout << "#################### Processing query number: " << curr_query_num << " ####################" << endl;
 
         single_searcher->full_query = line;
         cout << "Processing query: " << line << endl;
@@ -44,7 +44,7 @@ int main(int argc, char** argv){
     		single_searcher->searchAgain_without_preprocess();
     	}
 
-    	cout << "#################### Done with query number: " << curr_query_num << "####################" << endl;
+    	cout << "#################### Done with query number: " << curr_query_num << " ####################" << endl;
     	curr_query_num ++;
     }
     delete single_searcher;
