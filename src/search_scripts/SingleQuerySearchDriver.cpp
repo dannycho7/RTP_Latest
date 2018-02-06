@@ -17,7 +17,7 @@ int main(int argc, char** argv){
 		query+=" " + string(argv[i]);
 	}
 	
-	cout << "The full query is:" << query << endl;
+	cout << "The full query is: " << query << endl;
 	searcher->full_query=query;
 
 	searcher->runSearch();
