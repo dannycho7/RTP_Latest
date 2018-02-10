@@ -43,15 +43,15 @@ Possible choices for &lt;choice_of_representative&gt; are:
 
 8) To run batch queries: Enter all the queries (1 per line) in a .txt file and run the following command:
 
-`./run_batch_query.sh <query_file>`
+`./run_batch_query.sh <query_file_path>`
 
-**Note:** The package can only currently support conjunctive queries. Thus, there needs to be atleast 2 words in each query.
+**Note:** The package can only currently support conjunctive queries. Thus, there needs to be at least 2 words in each query.
 
 9) To run single queries: Run the following command:
 
 `./run_single_query.sh "<query>" <top_k> `
 
-**Note:** The package can only currently support conjunctive queries. Thus, there needs to be atleast 2 words in the query.
+**Note:** The package can only currently support conjunctive queries. Thus, there needs to be at least 2 words in the query.
 
 Dataset Format:
 ------------
@@ -89,7 +89,7 @@ For using the run_batch_query.sh script to run batch queries, one needs to speci
 
 Result Format:
 ------------
-The final results generated for a batch query will be in target/final_results.txt file. The format of the results is:
+The final results generated for a batch query will be in target/final_results.txt file. The top_k parameter specified as a parameter for the query scripts will determine the amount of documents returned. Each document/cluster will return a default of 10 versions. The format of the results is:
 <pre><code>Results for: &lt;query1&gt;
 vid: &lt;vid1&gt; score: &lt;score1&gt;
 .
